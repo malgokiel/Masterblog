@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Blog Post</title>
+</head>
+<body>
+    <h1>UpdateBlog Post</h1>
+    <form action="{{ post.id }}" method="post">
+        <div>
+            <textarea name="post-title">{{ post.title }}</textarea>
+        </div>
+        <div>
+            <textarea name="post-body">{{ post.content }}</textarea>
+        </div>
+        <div>
+            <textarea name="post-author">{{ post.author }}</textarea>
+        </div>
+        <button name="action" value="update" type="submit">update post</button>
+    </form>
+</body>
+</html>

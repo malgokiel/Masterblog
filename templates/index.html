@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Flask Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Welcome to My Flask Blog!</h1>
+    <p><a href="/add">Add new post</a></p>
+    {% if not posts %}
+        <p><em>no posts to display</em></p>
+    {% else %}
+        {% for post in posts %}
+            <div class="post">
+                <h2>{{ post.title }}</h2>
+                <p><em>Written by {{ post.author }}</em></p>
+                <p>{{ post.content }}</p>
+                <form action="/delete/{{ post.id }}" method="get">
+                    <button name="action" value="delete" type="submit">delete post</button>
+                </form>
+                <form action="/update/{{ post.id }}" method="get">
+                    <button name="action" value="update" type="submit">update post</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
