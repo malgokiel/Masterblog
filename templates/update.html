@@ -4,15 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Blog Post</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>UpdateBlog Post</h1>
+    <header>
+        <h1>Update Blog Post</h1>
+        <nav>
+            <a href="/">go back home</a>
+        </nav>
+    </header>
     <form action="{{ post.id }}" method="post">
         <div>
             <textarea name="post-title">{{ post.title }}</textarea>
         </div>
         <div>
-            <textarea name="post-body">{{ post.content }}</textarea>
+            <textarea id="content" name="post-body">{{ post.content }}</textarea>
         </div>
         <div>
             <textarea name="post-author">{{ post.author }}</textarea>

@@ -1,5 +1,6 @@
 import json
 
+
 def get_all_posts():
     """
     Function fetches all posts from a JSON file and returns them.
@@ -16,3 +17,4 @@ def save_all_posts_to_file(posts):
     """
     with open("posts.json", "w") as fileobj:
         json.dump(posts, fileobj)
+
