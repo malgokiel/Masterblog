@@ -1,15 +1,22 @@
 from flask import Flask, url_for
 from flask import request, render_template, redirect
-import json
+import helper
 
 app = Flask(__name__)
-POST_ID = 0
+
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
-    global POST_ID
-    with open("posts.json", "r") as fileobject:
-        all_posts = json.load(fileobject)
+    """
+    Function adds a new post to a post database. 
+    """
+    all_posts = helper.get_all_posts()
+
+    if not all_posts:
+        post_id = 0
+    else:
+        all_ids = [post["id"] for post in all_posts]
+        post_id = max(all_ids)
 
     if request.method == 'POST':
         action = request.form.get("action")
@@ -18,17 +25,15 @@ def add():
             title = request.form.get("post-title")
             content = request.form.get("post-body")
             author = request.form.get("post-author")
-            POST_ID += 1
+            post_id += 1
 
-            new_post = {"id": POST_ID,
+            new_post = {"id": post_id,
                          "author": author,
                            "title": title,
                              "content": content}
             
             all_posts.append(new_post)
-            print(all_posts)
-            with open("posts.json", "w") as fileobj:
-                json.dump(all_posts, fileobj)
+            helper.save_all_posts_to_file(all_posts)
             
             return redirect(url_for('index'))
 
@@ -37,33 +42,34 @@ def add():
 
 @app.route('/delete/<int:post_id>')
 def delete(post_id):
+    """
+    Function deletes a post with a specified id from a database.
+    """
     updated_posts  = []
-    with open("posts.json", "r") as fileobject:
-        all_posts = json.load(fileobject)
+    all_posts = helper.get_all_posts()
 
     for post in all_posts:
         if post["id"] != post_id:
             updated_posts.append(post)
     
-    with open("posts.json", "w") as fileobj:
-        json.dump(updated_posts, fileobj)
+    helper.save_all_posts_to_file(updated_posts)
+
     return redirect(url_for('index'))
 
 
 @app.route('/update/<int:post_id>', methods=['GET', 'POST'])
 def update(post_id):
-    # Fetch the blog posts from the JSON file
-    with open("posts.json", "r") as fileobject:
-        all_posts = json.load(fileobject)
+    """
+    Function updates a post of a specified id. 
+    Once changes are submitted, redirects the user back to main page.
+    """
+    all_posts = helper.get_all_posts()
 
     post = [post for post in all_posts if post["id"] == post_id]
     if post is None:
-        # Post not found
         return "Post not found", 404
 
     if request.method == 'POST':
-        # Update the post in the JSON file
-        # Redirect back to index
         action = request.form.get("action")
 
         if action == "update":
@@ -72,32 +78,31 @@ def update(post_id):
             author = request.form.get("post-author")
         
             for post in all_posts:
-                if post['id'] == post_id:
+                if post["id"] == post_id:
                     post["author"] = author
                     post["title"] = title
                     post["content"] = content
 
-            with open("posts.json", "w") as fileobj:
-                json.dump(all_posts, fileobj)
+            helper.save_all_posts_to_file(all_posts)
             
             return redirect(url_for('index'))
 
-    # Else, it's a GET request
-    # So display the update.html page
     return render_template('update.html', post=post[0])
+
 
 @app.route('/')
 def index():
+    """
+    Function fetches all the posts from a database and renders main page.
+    """
     while True:
         try:
-            with open("posts.json", "r") as fileobject:
-                posts = json.load(fileobject)
-                break
+            posts = helper.get_all_posts()
+            break
         except FileNotFoundError:
             with open("posts.json", 'w') as fileobject:
                 fileobject.write("[]")
  
-
     return render_template("index.html", posts=posts)
 
 
